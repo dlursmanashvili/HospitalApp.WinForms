@@ -17,10 +17,8 @@ namespace HospitalApp
             dataGridView1.Dock = DockStyle.Fill;
             dataGridView1.BackgroundColor = Color.White;
             dataGridView1.AllowUserToAddRows = false;
-
             LoadData();
             dataGridView1.Rows.Add();
-
         }
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
