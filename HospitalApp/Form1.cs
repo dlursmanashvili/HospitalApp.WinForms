@@ -1,12 +1,8 @@
 ﻿using HospitalApp.DBHelper;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace HospitalApp
@@ -21,6 +17,8 @@ namespace HospitalApp
             dataGridView1.Dock = DockStyle.Fill;
             dataGridView1.BackgroundColor = Color.White;
             dataGridView1.AllowUserToAddRows = false;
+
+            LoadData();
         }
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
@@ -74,6 +72,8 @@ namespace HospitalApp
                 bool success = patientHelper.AddPatientToDatabase(newPatient, DBProcedureHelper.GetConnectioinString());
                 if (success)
                 {
+                    dataGridView1.Rows.Clear();
+                    LoadData();
                     dataGridView1.Rows.Add();
                 }
             }
@@ -110,10 +110,6 @@ namespace HospitalApp
 
 
 
-
-
-
-
         private void editToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -122,6 +118,36 @@ namespace HospitalApp
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+
+
+
+        private void LoadData()
+        {
+            dataGridView1.AllowUserToAddRows = true;
+            var genderheler = new GenderHelper();
+            var genders = genderheler.LoadGenderFromDatabase(DBProcedureHelper.GetConnectioinString());
+            foreach (var item in genders)
+            {
+
+            }
+            PatientHelper patientHelper = new PatientHelper();
+            var patientInfo = patientHelper.LoadPatientsFromDatabase(DBProcedureHelper.GetConnectioinString());
+            foreach (var patient in patientInfo)
+            {
+                dataGridView1.Rows.Add(patient.Id, patient.FullName, patient.BirthDate, GetGenderName(patient.GenderId,genders), patient.PhoneNumber, patient.Address);
+            }
+            dataGridView1.AllowUserToAddRows = false;
+        }
+
+        private string GetGenderName(int id, List<GenderModel> genders)
+        {
+            if (genders.First(x => x.Id == id).GenderName == "მამრობითი")
+            {
+                return "მამრობითი";
+            }
+            return "მდედრობითი";
         }
     }
 }

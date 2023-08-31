@@ -13,7 +13,7 @@ namespace HospitalApp.DBHelper
             {
                 connection.Open();
 
-                string query = "SELECT ID, FullName, BirthDate, GenderID, PhoneNumber, Address FROM dbo.Patients";
+                string query = "SELECT ID, FullName, Dob, GenderID, Phone, Address FROM dbo.Patients";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
