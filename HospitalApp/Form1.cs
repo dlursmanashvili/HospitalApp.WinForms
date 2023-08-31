@@ -83,7 +83,75 @@ namespace HospitalApp
 
         private void editToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            int lastIndex = dataGridView1.SelectedRows.Count;
+            if (dataGridView1.Rows.Count > 0 && lastIndex > 0)
+            {
+                var DialogResult = MessageBox.Show(" ნამდვილად გსურთ აღნიშნულის განახლება  ? ", "confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (DialogResult.Yes == DialogResult)
+                {
+                    DataGridViewRow lastRow = dataGridView1.Rows[lastIndex - 1];
 
+                    if (lastRow.Cells["ID"].Value == null || int.TryParse(lastRow.Cells["ID"].Value.ToString(), out int PatientID) == false)
+                    {
+                        MessageBox.Show($"აღნიშნულის განახლება შეუძლებელია");
+                        return;
+                    }
+                    if (lastRow.Cells["BirthDate"].Value == null || DateTime.TryParse(lastRow.Cells["BirthDate"].Value.ToString(), out DateTime birthDate) == false)
+                    {
+                        MessageBox.Show($"დაბადების თარიღი არ არის შეყვანილი ან არასწორად არის შეყვანილი");
+                        return;
+                    }
+                    else if (lastRow.Cells["Gender"].Value == null)
+                    {
+                        MessageBox.Show($"გთხოვთ არიჩიოთ სქესი");
+                        return;
+                    }
+                    else if (lastRow.Cells["PatientNameAndSurname"].Value == null || lastRow.Cells["PatientNameAndSurname"].Value.ToString() == " ")
+                    {
+                        MessageBox.Show($"სახელი და გვარი არ არის შეყვანილი ან არასწორად არის შეყვანილი");
+                        return;
+                    }
+                    else if (!int.TryParse(lastRow.Cells["PhoneNumber"].Value?.ToString(), out int Phonenumber))
+                    {
+                        MessageBox.Show($"ტელეფონის ველი არავალიდურია");
+                        return;
+                    }
+
+                    PatientHelper patientHelper = new PatientHelper();
+                    var patient = patientHelper.GetPatientByIdFromDatabase(DbHelperClass.GetConnectioinString(), PatientID);
+
+                    if (patient != null && patient.IsDeleted == false)
+                    {
+                        int? Genderid = null;
+                        if (lastRow.Cells["Gender"].Value.ToString() == "მამრობითი")
+                        {
+                            Genderid = 1;
+                        }
+                        else if (lastRow.Cells["Gender"].Value.ToString() == "მდედრობითი")
+                        {
+                            Genderid = 2;
+                        }
+                        patientHelper.UpdatePatientInDatabase(DbHelperClass.GetConnectioinString(), new PatientModel()
+                        {
+                            Id = PatientID,
+                            IsDeleted = patient.IsDeleted,
+                            Address = lastRow.Cells["PhysicalAddres"].Value?.ToString(),
+                            BirthDate = birthDate,
+                            FullName = lastRow.Cells["PatientNameAndSurname"].Value.ToString(),
+                            GenderId = (int)Genderid,
+                            PhoneNumber = lastRow.Cells["PhoneNumber"].Value?.ToString()
+                        });
+                        dataGridView1.Rows.Clear();
+                        LoadData();
+                        dataGridView1.Rows.Add();
+                    }
+                    else
+                    {
+                        MessageBox.Show($"პაციენტი იდენტიფიკატორით {PatientID} ვერ მოიძებნა");
+                        return;
+                    }
+                }
+            }
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -121,8 +189,6 @@ namespace HospitalApp
 
                 }
             }
-
-
         }
 
 
