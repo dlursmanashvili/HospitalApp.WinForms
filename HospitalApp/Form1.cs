@@ -91,7 +91,6 @@ namespace HospitalApp
             int lastIndex = dataGridView1.SelectedRows.Count;
             if (dataGridView1.Rows.Count > 0 && lastIndex > 0)
             {
-
                 DataGridViewRow lastRow = dataGridView1.Rows[lastIndex - 1];
 
                 var DialogResult = MessageBox.Show(" ნამდვილად გსურთ წაშლა ? ", "confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
