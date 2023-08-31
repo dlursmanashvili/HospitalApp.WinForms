@@ -19,6 +19,8 @@ namespace HospitalApp
             dataGridView1.AllowUserToAddRows = false;
 
             LoadData();
+            dataGridView1.Rows.Add();
+
         }
 
         private void addToolStripMenuItem_Click(object sender, EventArgs e)
@@ -26,7 +28,7 @@ namespace HospitalApp
 
             if (dataGridView1.Rows.Count > 0)
             {
-                int lastIndex = dataGridView1.Rows.Count - 1;
+                int lastIndex = dataGridView1.RowCount - 1;
                 DataGridViewRow lastRow = dataGridView1.Rows[lastIndex];
 
 
@@ -77,10 +79,10 @@ namespace HospitalApp
                     dataGridView1.Rows.Add();
                 }
             }
-            else if (dataGridView1.Rows.Count == 0)
-            {
-                dataGridView1.Rows.Add();
-            }
+            //else if (dataGridView1.Rows.Count == 0)
+            //{
+            //    dataGridView1.Rows.Add();
+            //}
         }
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
