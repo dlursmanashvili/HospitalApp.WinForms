@@ -15,8 +15,8 @@ namespace HospitalApp
         [STAThread]
         static void Main()
         {           
-            DBProcedureHelper.Checkdb();
-            DBProcedureHelper.CheckTables();
+            DbHelperClass.Checkdb();
+            DbHelperClass.CheckTables();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

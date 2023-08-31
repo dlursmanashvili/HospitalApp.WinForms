@@ -10,6 +10,7 @@ namespace HospitalApp
         public int GenderId { get; set; }
         public string PhoneNumber { get; set; } = null;
         public string Address { get; set; } = null;
+        public bool IsDeleted { get; set; } = false;
 
     }
 }

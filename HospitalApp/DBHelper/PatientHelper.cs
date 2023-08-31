@@ -13,7 +13,7 @@ namespace HospitalApp.DBHelper
             {
                 connection.Open();
 
-                string query = "SELECT ID, FullName, Dob, GenderID, Phone, Address FROM dbo.Patients";
+                string query = "SELECT ID, FullName, Dob, GenderID, Phone, Address,IsDeleted FROM dbo.Patients";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
@@ -26,7 +26,8 @@ namespace HospitalApp.DBHelper
                             BirthDate = reader.GetDateTime(2),
                             GenderId = reader.GetInt32(3),
                             PhoneNumber = reader.GetString(4),
-                            Address = reader.GetString(5)
+                            Address = reader.GetString(5),
+                            IsDeleted = reader.GetBoolean(6)
                         };
                         patients.Add(patient);
                     }
@@ -35,6 +36,65 @@ namespace HospitalApp.DBHelper
             return patients;
         }
 
+        public PatientModel GetPatientByIdFromDatabase(string connectionString, int patientId)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT ID, FullName, Dob, GenderID, Phone, Address,IsDeleted FROM dbo.Patients WHERE ID = @PatientId AND IsDeleted = 0";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@PatientId", patientId);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            PatientModel patient = new PatientModel
+                            {
+                                Id = reader.GetInt32(0),
+                                FullName = reader.GetString(1),
+                                BirthDate = reader.GetDateTime(2),
+                                GenderId = reader.GetInt32(3),
+                                PhoneNumber = reader.GetString(4),
+                                Address = reader.GetString(5),
+                                IsDeleted = reader.GetBoolean(6)
+
+                            };
+                            return patient;
+                        }
+                    }
+                }
+            }
+            return null; // Patient with the given ID not found
+        }
+
+        public bool UpdatePatientInDatabase(string connectionString, PatientModel patient)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "UPDATE dbo.Patients " +
+                  "SET FullName = @FullName, Dob = @BirthDate, GenderID = @GenderId, Phone = @PhoneNumber, Address = @Address, IsDeleted = @IsDeleted " +
+                  "WHERE ID = @PatientId";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@PatientId", patient.Id);
+                    command.Parameters.AddWithValue("@FullName", patient.FullName);
+                    command.Parameters.AddWithValue("@BirthDate", patient.BirthDate);
+                    command.Parameters.AddWithValue("@GenderId", patient.GenderId);
+                    command.Parameters.AddWithValue("@PhoneNumber", patient.PhoneNumber);
+                    command.Parameters.AddWithValue("@Address", patient.Address);
+                    command.Parameters.AddWithValue("@IsDeleted", patient.IsDeleted);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    return rowsAffected > 0; // Returns true if at least one row was updated
+                }
+            }
+        }
 
         public bool AddPatientToDatabase(PatientModel patient, string connectionString)
         {
@@ -42,7 +102,7 @@ namespace HospitalApp.DBHelper
             {
                 connection.Open();
 
-                string query = "INSERT INTO dbo.Patients (FullName, Dob, GenderID,Phone,Address) VALUES (@FullName, @Dob, @GenderId, @Phone,@Address)";
+                string query = "INSERT INTO dbo.Patients (FullName, Dob, GenderID,Phone,Address, IsDeleted) VALUES (@FullName, @Dob, @GenderId, @Phone,@Address, @IsDeleted)";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
@@ -51,7 +111,7 @@ namespace HospitalApp.DBHelper
                     command.Parameters.AddWithValue("@GenderId", patient.GenderId);
                     command.Parameters.AddWithValue("@Phone", patient.PhoneNumber);
                     command.Parameters.AddWithValue("@Address", patient.Address);
-
+                    command.Parameters.AddWithValue("@IsDeleted", patient.IsDeleted);
                     int rowsAffected = command.ExecuteNonQuery();
                     return rowsAffected > 0;
                 }

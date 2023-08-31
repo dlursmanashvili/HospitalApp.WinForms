@@ -69,7 +69,7 @@ namespace HospitalApp
                 newPatient.PhoneNumber = lastRow.Cells["PhoneNumber"].Value?.ToString();
                 newPatient.Address = lastRow.Cells["PhysicalAddres"].Value?.ToString();
 
-                bool success = patientHelper.AddPatientToDatabase(newPatient, DBProcedureHelper.GetConnectioinString());
+                bool success = patientHelper.AddPatientToDatabase(newPatient, DbHelperClass.GetConnectioinString());
                 if (success)
                 {
                     dataGridView1.Rows.Clear();
@@ -77,11 +77,55 @@ namespace HospitalApp
                     dataGridView1.Rows.Add();
                 }
             }
-            //else if (dataGridView1.Rows.Count == 0)
-            //{
-            //    dataGridView1.Rows.Add();
-            //}
         }
+
+
+
+        private void editToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int lastIndex = dataGridView1.SelectedRows.Count;
+            if (dataGridView1.Rows.Count > 0 && lastIndex > 0)
+            {
+
+                DataGridViewRow lastRow = dataGridView1.Rows[lastIndex - 1];
+
+                var DialogResult = MessageBox.Show(" ნამდვილად გსურთ წაშლა ? ", "confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (DialogResult.Yes == DialogResult)
+                {
+                    if (lastRow.Cells["ID"].Value == null || int.TryParse(lastRow.Cells["ID"].Value.ToString(), out int PatientID) == false)
+                    {
+                        MessageBox.Show($"აღნიშნულის წაშლა შეუძლებელია");
+                        return;
+                    }
+
+                    PatientHelper patientHelper = new PatientHelper();
+                    var patient = patientHelper.GetPatientByIdFromDatabase(DbHelperClass.GetConnectioinString(), PatientID);
+
+                    if (patient != null && patient.IsDeleted == false)
+                    {
+                        patient.IsDeleted = true;
+                        patientHelper.UpdatePatientInDatabase(DbHelperClass.GetConnectioinString(), patient);
+                        dataGridView1.Rows.Clear();
+                        LoadData();
+                        dataGridView1.Rows.Add();
+                    }
+                    else
+                    {
+                        MessageBox.Show($"პაციენტი იდენტიფიკატორით {PatientID} ვერ მოიძებნა");
+                        return;
+                    }
+
+                }
+            }
+
+
+        }
+
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -99,6 +143,7 @@ namespace HospitalApp
             }
         }
 
+
         private void dateTimePicker_textchanged(object sender, EventArgs e)
         {
             dataGridView1.CurrentCell.Value = dateTimePicker.Text.ToString();
@@ -110,15 +155,7 @@ namespace HospitalApp
 
 
 
-        private void editToolStripMenuItem_Click(object sender, EventArgs e)
-        {
 
-        }
-
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
 
 
 
@@ -127,16 +164,16 @@ namespace HospitalApp
         {
             dataGridView1.AllowUserToAddRows = true;
             var genderheler = new GenderHelper();
-            var genders = genderheler.LoadGenderFromDatabase(DBProcedureHelper.GetConnectioinString());
-            foreach (var item in genders)
-            {
+            var genders = genderheler.LoadGenderFromDatabase(DbHelperClass.GetConnectioinString());
 
-            }
             PatientHelper patientHelper = new PatientHelper();
-            var patientInfo = patientHelper.LoadPatientsFromDatabase(DBProcedureHelper.GetConnectioinString());
+            var patientInfo = patientHelper.LoadPatientsFromDatabase(DbHelperClass.GetConnectioinString());
             foreach (var patient in patientInfo)
             {
-                dataGridView1.Rows.Add(patient.Id, patient.FullName, patient.BirthDate, GetGenderName(patient.GenderId,genders), patient.PhoneNumber, patient.Address);
+                if (patient.IsDeleted == false)
+                {
+                    dataGridView1.Rows.Add(patient.Id, patient.FullName, patient.BirthDate, GetGenderName(patient.GenderId, genders), patient.PhoneNumber, patient.Address);
+                }
             }
             dataGridView1.AllowUserToAddRows = false;
         }

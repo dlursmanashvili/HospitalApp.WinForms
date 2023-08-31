@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Data.SqlClient;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace HospitalApp.DBHelper
 {
-    public static class DBProcedureHelper
+    public static class DbHelperClass
     {
         private static string serverName = "."; // Имя сервера (замените на свое)
         private static string databaseName = "HospitalDB"; // Имя базы данных
@@ -51,7 +50,6 @@ namespace HospitalApp.DBHelper
                 {
                     connection.Open();
 
-                    // Проверка наличия таблицы Patients
                     string checkPatientsTableQuery = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'Patients'";
                     using (SqlCommand command = new SqlCommand(checkPatientsTableQuery, connection))
                     {
@@ -59,8 +57,15 @@ namespace HospitalApp.DBHelper
 
                         if (patientsTableCount == 0)
                         {
-                            // Создание таблицы Patients
-                            string createPatientsTableQuery = "CREATE TABLE dbo.Patients (ID INT IDENTITY, FullName NVARCHAR(200) NOT NULL, Dob DATE NOT NULL, GenderID INT NOT NULL, Phone VARCHAR(50) NULL, Address NVARCHAR(500) NULL)";
+                            string createPatientsTableQuery = @"
+                                 CREATE TABLE dbo.Patients (
+                                 ID INT IDENTITY,
+                                 FullName NVARCHAR(200) NOT NULL,
+                                 Dob DATE NOT NULL,
+                                 GenderID INT NOT NULL,
+                                 Phone VARCHAR(50) NULL,
+                                 Address NVARCHAR(500) NULL,
+                                 IsDeleted BIT NOT NULL DEFAULT 0)";
                             using (SqlCommand createCommand = new SqlCommand(createPatientsTableQuery, connection))
                             {
                                 createCommand.ExecuteNonQuery();
@@ -69,7 +74,6 @@ namespace HospitalApp.DBHelper
                         }
                     }
 
-                    // Проверка наличия таблицы Gender
                     string checkGenderTableQuery = "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'Gender'";
                     using (SqlCommand command = new SqlCommand(checkGenderTableQuery, connection))
                     {
@@ -77,12 +81,10 @@ namespace HospitalApp.DBHelper
 
                         if (genderTableCount == 0)
                         {
-                            // Создание таблицы Gender
                             string createGenderTableQuery = "CREATE TABLE dbo.Gender (GenderID INT IDENTITY, GenderName NVARCHAR(30) NOT NULL)";
                             using (SqlCommand createCommand = new SqlCommand(createGenderTableQuery, connection))
                             {
                                 createCommand.ExecuteNonQuery();
-                                Console.WriteLine("Таблица Gender успешно создана.");
                             }
                         }
                     }
@@ -90,14 +92,13 @@ namespace HospitalApp.DBHelper
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Ошибка: {ex.Message}");
+                    Console.WriteLine($"error: {ex.Message}");
                 }
             }
         }
 
         private static void CheckGender(SqlConnection connection)
         {
-            // Проверка наличия записи с GenderName = 'Male'
             string checkMaleQuery = "SELECT COUNT(*) FROM dbo.Gender WHERE GenderName = 'Male'";
             using (SqlCommand command = new SqlCommand(checkMaleQuery, connection))
             {
@@ -110,7 +111,7 @@ namespace HospitalApp.DBHelper
                     {
                         insertCommand.ExecuteNonQuery();
                     }
-                }              
+                }
             }
             string checkFemaleQuery = "SELECT COUNT(*) FROM dbo.Gender WHERE GenderName = 'Famle'";
             using (SqlCommand femaleCommand = new SqlCommand(checkFemaleQuery, connection))
@@ -119,13 +120,12 @@ namespace HospitalApp.DBHelper
 
                 if (femaleCount == 0)
                 {
-                    // Добавление записи с GenderName = 'Famle'
                     string insertFemaleQuery = "INSERT INTO dbo.Gender (GenderName) VALUES ('Famle')";
                     using (SqlCommand insertCommand = new SqlCommand(insertFemaleQuery, connection))
                     {
                         insertCommand.ExecuteNonQuery();
                     }
-                }              
+                }
             }
         }
 
