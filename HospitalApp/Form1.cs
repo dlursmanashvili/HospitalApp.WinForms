@@ -45,7 +45,7 @@ namespace HospitalApp
                     MessageBox.Show($"სახელი და გვარი არ არის შეყვანილი ან არასწორად არის შეყვანილი");
                     return;
                 }
-                else if (!int.TryParse(lastRow.Cells["PhoneNumber"].Value?.ToString(), out int Phonenumber))
+                else if (lastRow.Cells["PhoneNumber"].Value != null && !int.TryParse(lastRow.Cells["PhoneNumber"].Value.ToString(), out int Phonenumber))
                 {
                     MessageBox.Show($"ტელეფონის ველი არავალიდურია");
                     return;
@@ -111,7 +111,7 @@ namespace HospitalApp
                         MessageBox.Show($"სახელი და გვარი არ არის შეყვანილი ან არასწორად არის შეყვანილი");
                         return;
                     }
-                    else if (!int.TryParse(lastRow.Cells["PhoneNumber"].Value?.ToString(), out int Phonenumber))
+                    else if (lastRow.Cells["PhoneNumber"].Value != null && !int.TryParse(lastRow.Cells["PhoneNumber"].Value?.ToString(), out int Phonenumber))
                     {
                         MessageBox.Show($"ტელეფონის ველი არავალიდურია");
                         return;
@@ -212,6 +212,7 @@ namespace HospitalApp
         private void dateTimePicker_textchanged(object sender, EventArgs e)
         {
             dataGridView1.CurrentCell.Value = dateTimePicker.Text.ToString();
+
         }
         private void dateTimePicker_closeup(object sender, EventArgs e)
         {
@@ -250,6 +251,19 @@ namespace HospitalApp
                 return "მამრობითი";
             }
             return "მდედრობითი";
+        }
+
+        private void dataGridView1_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.ColumnIndex != 2)
+            {
+                dataGridView1.Controls.Remove(dateTimePicker);
+            }
+        }
+
+        private void menuStrip1_MouseClick(object sender, MouseEventArgs e)
+        {
+            dataGridView1.Controls.Remove(dateTimePicker);
         }
     }
 }

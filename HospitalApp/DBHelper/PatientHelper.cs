@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace HospitalApp.DBHelper
@@ -25,8 +26,8 @@ namespace HospitalApp.DBHelper
                             FullName = reader.GetString(1),
                             BirthDate = reader.GetDateTime(2),
                             GenderId = reader.GetInt32(3),
-                            PhoneNumber = reader.GetString(4),
-                            Address = reader.GetString(5),
+                            PhoneNumber = reader.IsDBNull(4) ? null : reader.GetString(4),
+                            Address = reader.IsDBNull(5) ? null : reader.GetString(5),
                             IsDeleted = reader.GetBoolean(6)
                         };
                         patients.Add(patient);
@@ -57,8 +58,8 @@ namespace HospitalApp.DBHelper
                                 FullName = reader.GetString(1),
                                 BirthDate = reader.GetDateTime(2),
                                 GenderId = reader.GetInt32(3),
-                                PhoneNumber = reader.GetString(4),
-                                Address = reader.GetString(5),
+                                PhoneNumber = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                Address = reader.IsDBNull(5) ? null : reader.GetString(5),
                                 IsDeleted = reader.GetBoolean(6)
 
                             };
@@ -86,8 +87,24 @@ namespace HospitalApp.DBHelper
                     command.Parameters.AddWithValue("@FullName", patient.FullName);
                     command.Parameters.AddWithValue("@BirthDate", patient.BirthDate);
                     command.Parameters.AddWithValue("@GenderId", patient.GenderId);
-                    command.Parameters.AddWithValue("@PhoneNumber", patient.PhoneNumber);
-                    command.Parameters.AddWithValue("@Address", patient.Address);
+
+                    if (patient.PhoneNumber != null)
+                    {
+                        command.Parameters.AddWithValue("@PhoneNumber", patient.PhoneNumber);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@PhoneNumber", DBNull.Value);
+                    }
+                    if (patient.Address != null)
+                    {
+                        command.Parameters.AddWithValue("@Address", patient.Address);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@Address", DBNull.Value);
+                    }
+
                     command.Parameters.AddWithValue("@IsDeleted", patient.IsDeleted);
 
                     int rowsAffected = command.ExecuteNonQuery();
@@ -109,8 +126,23 @@ namespace HospitalApp.DBHelper
                     command.Parameters.AddWithValue("@FullName", patient.FullName);
                     command.Parameters.AddWithValue("@Dob", patient.BirthDate);
                     command.Parameters.AddWithValue("@GenderId", patient.GenderId);
-                    command.Parameters.AddWithValue("@Phone", patient.PhoneNumber);
-                    command.Parameters.AddWithValue("@Address", patient.Address);
+                    if (patient.PhoneNumber != null)
+                    {
+                        command.Parameters.AddWithValue("@Phone", patient.PhoneNumber);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@Phone", DBNull.Value);
+                    }
+
+                    if (patient.Address != null)
+                    {
+                        command.Parameters.AddWithValue("@Address", patient.Address);
+                    }
+                    else
+                    {
+                        command.Parameters.AddWithValue("@Address", DBNull.Value);
+                    }
                     command.Parameters.AddWithValue("@IsDeleted", patient.IsDeleted);
                     int rowsAffected = command.ExecuteNonQuery();
                     return rowsAffected > 0;
