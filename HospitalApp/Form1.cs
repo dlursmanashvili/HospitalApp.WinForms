@@ -26,7 +26,7 @@ namespace HospitalApp
 
             if (dataGridView1.Rows.Count > 0)
             {
-                int lastIndex = dataGridView1.RowCount - 1;
+                int lastIndex = dataGridView1.Rows.Count - 1;
                 DataGridViewRow lastRow = dataGridView1.Rows[lastIndex];
 
                 var phoneNumberString = lastRow.Cells["PhoneNumber"].Value?.ToString();
