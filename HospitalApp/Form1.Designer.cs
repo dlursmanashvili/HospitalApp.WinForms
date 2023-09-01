@@ -1,4 +1,6 @@
-﻿namespace HospitalApp
+﻿using System.Drawing;
+
+namespace HospitalApp
 {
     partial class Form1
     {
@@ -167,6 +169,7 @@
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+            dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font(dataGridView1.Font, FontStyle.Bold);
 
         }
 

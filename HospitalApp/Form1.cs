@@ -29,6 +29,7 @@ namespace HospitalApp
                 int lastIndex = dataGridView1.RowCount - 1;
                 DataGridViewRow lastRow = dataGridView1.Rows[lastIndex];
 
+                var phoneNumberString = lastRow.Cells["PhoneNumber"].Value?.ToString();
 
                 if (lastRow.Cells["BirthDate"].Value == null || DateTime.TryParse(lastRow.Cells["BirthDate"].Value.ToString(), out DateTime birthDate) == false)
                 {
@@ -45,9 +46,11 @@ namespace HospitalApp
                     MessageBox.Show($"სახელი და გვარი არ არის შეყვანილი ან არასწორად არის შეყვანილი");
                     return;
                 }
-                else if (lastRow.Cells["PhoneNumber"].Value != null && !int.TryParse(lastRow.Cells["PhoneNumber"].Value.ToString(), out int Phonenumber))
+                else if (phoneNumberString != null &&( int.TryParse(phoneNumberString, out int phonenumber) == false ||
+        phoneNumberString.Length != 9 ||
+        phoneNumberString[0] != '5'))
                 {
-                    MessageBox.Show($"ტელეფონის ველი არავალიდურია");
+                    MessageBox.Show("ტელეფონის ველი არავალიდურია");
                     return;
                 }
 
@@ -89,7 +92,9 @@ namespace HospitalApp
                 var DialogResult = MessageBox.Show(" ნამდვილად გსურთ აღნიშნულის განახლება  ? ", "confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (DialogResult.Yes == DialogResult)
                 {
+
                     DataGridViewRow lastRow = dataGridView1.Rows[lastIndex - 1];
+                    var phoneNumberString = lastRow.Cells["PhoneNumber"].Value?.ToString();
 
                     if (lastRow.Cells["ID"].Value == null || int.TryParse(lastRow.Cells["ID"].Value.ToString(), out int PatientID) == false)
                     {
@@ -111,9 +116,11 @@ namespace HospitalApp
                         MessageBox.Show($"სახელი და გვარი არ არის შეყვანილი ან არასწორად არის შეყვანილი");
                         return;
                     }
-                    else if (lastRow.Cells["PhoneNumber"].Value != null && !int.TryParse(lastRow.Cells["PhoneNumber"].Value?.ToString(), out int Phonenumber))
+                    else if (phoneNumberString != null && (int.TryParse(phoneNumberString, out int phonenumber) == false ||
+                            phoneNumberString.Length != 9 ||
+                            phoneNumberString[0] != '5'))
                     {
-                        MessageBox.Show($"ტელეფონის ველი არავალიდურია");
+                        MessageBox.Show("ტელეფონის ველი არავალიდურია");
                         return;
                     }
 
