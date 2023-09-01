@@ -93,7 +93,7 @@ namespace HospitalApp
                 if (DialogResult.Yes == DialogResult)
                 {
 
-                    DataGridViewRow lastRow = dataGridView1.Rows[lastIndex - 1];
+                    DataGridViewRow lastRow = dataGridView1.Rows[lastIndex -1];
                     var phoneNumberString = lastRow.Cells["PhoneNumber"].Value?.ToString();
 
                     if (lastRow.Cells["ID"].Value == null || int.TryParse(lastRow.Cells["ID"].Value.ToString(), out int PatientID) == false)
@@ -245,7 +245,7 @@ namespace HospitalApp
             {
                 if (patient.IsDeleted == false)
                 {
-                    dataGridView1.Rows.Add(patient.Id, patient.FullName, patient.BirthDate, GetGenderName(patient.GenderId, genders), patient.PhoneNumber, patient.Address);
+                    dataGridView1.Rows.Add(patient.Id, patient.FullName, patient.BirthDate.Date.ToString("dd/MM/yyyy"), GetGenderName(patient.GenderId, genders), patient.PhoneNumber, patient.Address);
                 }
             }
             dataGridView1.AllowUserToAddRows = false;
@@ -266,6 +266,7 @@ namespace HospitalApp
             {
                 dataGridView1.Controls.Remove(dateTimePicker);
             }
+
         }
 
         private void menuStrip1_MouseClick(object sender, MouseEventArgs e)
